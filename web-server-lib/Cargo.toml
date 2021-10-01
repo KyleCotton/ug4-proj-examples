@@ -1,0 +1,8 @@
+[package]
+name = "web-server-lib"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+rusty_junctions = {path = "./../../rusty_junctions"}
+httparse = "1.5.1"
