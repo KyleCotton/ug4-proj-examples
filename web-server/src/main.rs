@@ -5,7 +5,7 @@ mod web_server;
 use crate::web_server::WebServer;
 
 use std::time::Duration;
-const DELAY_TIME: Duration = Duration::from_nanos(5);
+const DELAY_TIME: Duration = Duration::from_millis(20);
 
 fn main() {
     if cfg!(feature = "single_threaded") {

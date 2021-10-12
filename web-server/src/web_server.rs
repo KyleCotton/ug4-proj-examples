@@ -81,7 +81,6 @@ impl WebServer {
         // the current one and send a new value.
         let v = value.clone();
         j.when(&value).and(&add).then_do(move |value, num| {
-            std::thread::sleep(crate::DELAY_TIME);
             v.send(value + num).expect("Updating value");
         });
 

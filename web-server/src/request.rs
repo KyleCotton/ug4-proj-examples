@@ -76,6 +76,8 @@ impl Request {
     }
 
     pub fn handle_pooled(&mut self, add: &SendChannel<i64>, get: &RecvChannel<i64>) {
+        std::thread::sleep(crate::DELAY_TIME);
+
         let path = self.clone().path;
         match handle_connection(path) {
             Action::Add(v) => {
