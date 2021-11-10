@@ -14,7 +14,6 @@ where
 
         // There is a root node, start from it and traverse
         let mut current: &Node<K, V> = &self.root;
-
         while let Node::Entry {
             entry,
             ref left,
@@ -27,29 +26,8 @@ where
                 Ordering::Greater => right,
             };
         }
-        // loop {
-        //     current = match current {
-        //         Node::Entry {
-        //             entry,
-        //             ref left,
-        //             ref right,
-        //         } => match key.cmp(&entry.get_key().ok()?) {
-        //             Ordering::Equal => break,
-        //             Ordering::Less => left,
-        //             Ordering::Greater => right,
-        //         },
-        //         Node::Empty => {
-        //             break;
-        //         }
-        //     };
-        // }
 
         None
-
-        // match current {
-        //     Node::Empty => None,
-        //     Node::Entry { ref entry, .. } => entry.get_value().ok(),
-        // }
     }
 }
 

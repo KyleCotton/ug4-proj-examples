@@ -34,22 +34,8 @@ where
                 Ordering::Greater => right.as_mut(),
             };
         }
-        // loop {
-        //     current = match current {
-        //         Node::Entry {
-        //             entry,
-        //             ref mut left,
-        //             ref mut right,
-        //         } => match key.cmp(&entry.get_key()?) {
-        //             Ordering::Equal | Ordering::Less => left.as_mut(),
-        //             Ordering::Greater => right.as_mut(),
-        //         },
-        //         Node::Empty => break,
-        //     };
-        // }
 
         *current = Node::from_key_value(key, value)?;
-
         Ok(())
     }
 }
