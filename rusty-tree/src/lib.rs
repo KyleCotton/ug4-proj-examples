@@ -1,6 +1,8 @@
 mod entry;
 mod tree;
 
+pub use crate::tree::RustyTree;
+
 // TODO: Constrain the emptyness using the type system
 // trait Tree {
 //     type Key;

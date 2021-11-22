@@ -3,7 +3,6 @@ use std::{cmp::Ordering, fmt::Debug, marker::Send};
 
 use crate::tree::RustyTree;
 
-
 impl<K, V> RustyTree<K, V>
 where
     K: Send + Ord + Clone + 'static + Debug,
@@ -60,7 +59,6 @@ mod tests {
 
         assert!(tree.insert(1, "Test Value 1".to_string()).is_ok());
         assert_eq!(tree.get(1), Some("Test Value 1".to_string()));
-
 
         assert_eq!(tree.get(0), Some("Test Value 0".to_string()));
         assert_eq!(tree.get(1), Some("Test Value 1".to_string()));
