@@ -4,14 +4,10 @@ use std::{fmt::Debug, marker::Send};
 mod get;
 mod insert;
 
-// type ChildEntry<K, V> = Option<Box<RustyTree<K, V>>>;
+#[derive(Clone)]
 pub enum Node<K, V> {
     Empty,
-    Entry {
-        entry: Entry<K, V>,
-        left: Box<Node<K, V>>,
-        right: Box<Node<K, V>>,
-    },
+    Entry { entry: Entry<K, V> },
 }
 
 impl<K, V> Node<K, V>
@@ -21,10 +17,8 @@ where
 {
     pub fn from_key_value(key: K, value: V) -> Result<Self, String> {
         let entry = Entry::new(key, value)?;
-        let left = Box::new(Node::Empty);
-        let right = Box::new(Node::Empty);
 
-        Ok(Node::Entry { entry, left, right })
+        Ok(Node::Entry { entry })
     }
 }
 
