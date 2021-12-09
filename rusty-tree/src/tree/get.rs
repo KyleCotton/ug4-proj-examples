@@ -1,4 +1,7 @@
-use crate::tree::{Node, RustyTree};
+use crate::{
+    entry::Entry,
+    tree::{Node, RustyTree},
+};
 use std::{cmp::Ordering, fmt::Debug, marker::Send};
 
 impl<K, V> RustyTree<K, V>
@@ -13,17 +16,12 @@ where
         }
 
         // There is a root node, start from it and traverse
-        let mut current: &Node<K, V> = &self.root;
-        while let Node::Entry {
-            entry,
-            ref left,
-            ref right,
-        } = current
-        {
-            current = match key.cmp(&entry.get_key().ok()?) {
+        let mut curr_node: Node<K, V> = self.root.clone();
+        while let Node::Entry { entry } = curr_node {
+            curr_node = match key.cmp(&key) {
                 Ordering::Equal => return entry.get_value().ok(),
-                Ordering::Less => left,
-                Ordering::Greater => right,
+                Ordering::Less => *entry.get_left().ok()?.clone(),
+                Ordering::Greater => *entry.get_right().ok()?.clone(),
             };
         }
 
