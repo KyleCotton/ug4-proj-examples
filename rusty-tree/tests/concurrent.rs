@@ -7,7 +7,7 @@ use std::time::Duration;
 
 #[test]
 fn insert_from_another_thread() {
-    let mut tree: RustyTree<i64, String> = RustyTree::new();
+    let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
 
     assert!(tree.insert(0, "One".to_string()).is_ok());
     assert_eq!(tree.get(0), Some("One".to_string()));

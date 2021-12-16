@@ -1,26 +1,8 @@
-use crate::entry::Entry;
-use std::{fmt::Debug, marker::Send};
-
 mod get;
 mod insert;
 
-#[derive(Clone)]
-pub enum Node<K, V> {
-    Empty,
-    Entry { entry: Entry<K, V> },
-}
-
-impl<K, V> Node<K, V>
-where
-    K: Send + Ord + Clone + 'static + Debug,
-    V: Send + Clone + 'static + Debug,
-{
-    pub fn from_key_value(key: K, value: V) -> Result<Self, String> {
-        let entry = Entry::new(key, value)?;
-
-        Ok(Node::Entry { entry })
-    }
-}
+use crate::node::Node;
+use std::{fmt::Debug, marker::Send};
 
 pub struct RustyTree<K, V> {
     root: Node<K, V>,
@@ -31,12 +13,13 @@ where
     K: Send + Ord + Clone + 'static + Debug,
     V: Send + Clone + 'static + Debug,
 {
-    pub fn new() -> Self {
-        Self { root: Node::Empty }
+    pub fn new() -> Result<Self, String> {
+        let root = Node::empty_node()?;
+        Ok(Self { root })
     }
 
     pub fn from_key_value(key: K, value: V) -> Result<Self, String> {
-        let root = Node::from_key_value(key, value)?;
+        let root = Node::new(key, value)?;
         Ok(Self { root })
     }
 }
@@ -47,14 +30,13 @@ where
     V: Send + Clone + 'static + Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        let value = match &self.root {
-            Node::Empty => "Tree {{ EMPTY }}".to_string(),
-            Node::Entry { entry, .. } => {
-                format!("Tree {{ {:?} }}", entry)
-            }
+        let key_value = match self.root.get_key_and_value() {
+            Ok(Some((key, value))) => format!("Key: {:?}, Value: {:?}", key, value),
+            Ok(None) => "Empty Node".to_string(),
+            Err(e) => e.to_string(),
         };
 
-        write!(f, "{}", value)
+        write!(f, "ROOT: {{ {} }}", key_value)
     }
 }
 
@@ -64,7 +46,7 @@ mod tests {
 
     #[test]
     fn create_tree() {
-        let _tree: RustyTree<i64, String> = RustyTree::new();
+        let _tree: RustyTree<i64, String> = RustyTree::new().unwrap();
     }
 
     #[test]

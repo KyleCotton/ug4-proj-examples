@@ -1,7 +1,4 @@
-use crate::{
-    entry::Entry,
-    tree::{Node, RustyTree},
-};
+use crate::tree::{Node, RustyTree};
 use std::{cmp::Ordering, fmt::Debug, marker::Send};
 
 impl<K, V> RustyTree<K, V>
@@ -10,18 +7,14 @@ where
     V: Send + Clone + 'static + Debug,
 {
     pub fn get(&self, key: K) -> Option<V> {
-        // Start from the root node of the tree, see if there is one.
-        if let Node::Empty = self.root {
-            return None;
-        }
-
-        // There is a root node, start from it and traverse
+        // If there is a root node, start from it and traverse
+        // let mut curr_node: Node<K, V> = root.clone();
         let mut curr_node: Node<K, V> = self.root.clone();
-        while let Node::Entry { entry } = curr_node {
-            curr_node = match key.cmp(&key) {
-                Ordering::Equal => return entry.get_value().ok(),
-                Ordering::Less => *entry.get_left().ok()?.clone(),
-                Ordering::Greater => *entry.get_right().ok()?.clone(),
+        while let node = curr_node {
+            curr_node = match key.cmp(&node.get_key().ok()??) {
+                Ordering::Equal => return node.get_value().ok()?,
+                Ordering::Less => node.get_left().ok()??.clone(),
+                Ordering::Greater => node.get_right().ok()??.clone(),
             };
         }
 
@@ -53,7 +46,7 @@ mod tests {
 
     #[test]
     fn get_two_elements() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new();
+        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
         tree.insert(0, "Test Value 0".to_string()).ok();
         assert!(tree.get(0).is_some());
 
@@ -66,7 +59,7 @@ mod tests {
 
     #[test]
     fn get_multiple_elements() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new();
+        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
         tree.insert(0, "Test Value 0".to_string()).ok();
         tree.insert(1, "Test Value 1".to_string()).ok();
         tree.insert(2, "Test Value 2".to_string()).ok();
@@ -82,7 +75,7 @@ mod tests {
 
     #[test]
     fn get_non_existing_elements() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new();
+        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
         tree.insert(0, "Test Value 0".to_string()).ok();
         tree.insert(1, "Test Value 1".to_string()).ok();
         tree.insert(2, "Test Value 2".to_string()).ok();

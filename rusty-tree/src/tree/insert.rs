@@ -8,33 +8,53 @@ where
     K: Send + Ord + Clone + 'static + Debug,
     V: Send + Clone + 'static + Debug,
 {
-    pub fn insert(&mut self, key: K, value: V) -> Result<(), String> {
-        // Start from the root node of the tree, see if there is one.
-        if let Node::Empty = self.root {
-            let new_tree = RustyTree::from_key_value(key, value)?;
-            *self = new_tree;
-            return Ok(());
-        }
+    pub fn insert(&self, key: K, value: V) -> Result<(), String> {
+        // // Start from the root node of the tree, and traverse
+        // let curr_node: &Node<K, V> = &self.root;
+        // while let Node::Entry { entry } = curr_node {
+        //     curr_node = match key.cmp(&entry.get_key()?) {
+        //         Ordering::Equal => {
+        //             entry.set_value(value)?;
+        //             return Ok(());
+        //         }
+        //         Ordering::Less => &*entry.get_left()?,
+        //         Ordering::Greater => &*entry.get_right()?,
+        //     };
+        // }
 
-        // There is a root node, start from it and traverse
-        let mut current: &mut Node<K, V> = &mut self.root;
-        while let Node::Entry {
-            entry,
-            ref mut left,
-            ref mut right,
-        } = current
-        {
-            current = match key.cmp(&entry.get_key()?) {
-                Ordering::Equal => {
-                    entry.set_value(value)?;
+        // *curr_node = Node::from_key_value(key, value)?;
+        // Ok(())
+
+        // If there is a root node, start from it and traverse
+        // let mut curr_node: Node<K, V> = root.clone();
+        let mut curr_node: Node<K, V> = self.root.clone();
+        while let node = curr_node {
+            // If the key value is none, the node is empty
+            let curr_key = match node.get_key()? {
+                None => {
+                    node.set_key(key)?;
+                    node.set_value(value)?;
                     return Ok(());
                 }
-                Ordering::Less => left.as_mut(),
-                Ordering::Greater => right.as_mut(),
+                Some(k) => k,
+            };
+
+            curr_node = match key.cmp(&curr_key) {
+                Ordering::Equal => {
+                    node.set_value(value)?;
+                    return Ok(());
+                }
+                Ordering::Less => node
+                    .get_left()?
+                    .ok_or_else(|| "Failed to get Left")?
+                    .clone(),
+                Ordering::Greater => node
+                    .get_right()?
+                    .ok_or_else(|| "Failed to get Right")?
+                    .clone(),
             };
         }
 
-        *current = Node::from_key_value(key, value)?;
         Ok(())
     }
 }
@@ -45,7 +65,7 @@ mod tests {
 
     #[test]
     fn insert_single_element() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new();
+        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
 
         assert!(tree.insert(0, "Test Value".to_string()).is_ok());
         assert_eq!(tree.get(0), Some("Test Value".to_string()));
@@ -53,7 +73,7 @@ mod tests {
 
     #[test]
     fn insert_two_elements() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new();
+        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
         assert!(tree.insert(0, "Test Value 0".to_string()).is_ok());
         assert_eq!(tree.get(0), Some("Test Value 0".to_string()));
 
