@@ -13,12 +13,6 @@ pub type Value<V> = Option<V>;
 
 #[derive(Clone)]
 pub struct Node<K, V> {
-    // TODO: This could cause issue if the join handle is dropped
-    // Consider storing some information about the junction
-    // controller_handle: ControllerHandle,
-    // junction: Junction,
-    controller_thread: ControllerHandle,
-
     key: SendChannel<Key<K>>,
     key_put: SendChannel<Key<K>>,
     key_get: RecvChannel<Key<K>>,
@@ -48,7 +42,18 @@ where
         initial_key: Option<K>,
         initial_value: Option<V>,
     ) -> Result<Self, String> {
-        let junction = Junction::new();
+
+        // We require that the Junction is immortal.
+        // When the `Junction` is `drop`ped it will send a `ShutDownRequest` to
+        // the `Controller` by the `ControllerHandle`, if there is one.  To allow
+        // the `Junctions` to be immortal we simply take the `ControllerHandle`
+        // from the `Junction` and let it get dropped.
+        // So that the `ShutDownRequest` is never sent to the `Controller`.
+        let mut junction = Junction::new();
+        let _controller_handle = junction
+            .controller_handle()
+            .ok_or_else(|| "Failed to get ControllerHandle".to_string())?;
+        let junction = junction;
 
         let key = junction.send_channel::<Key<K>>();
         let key_put = junction.send_channel::<Key<K>>();
@@ -168,14 +173,7 @@ where
         left.send(None).map_err(|_| "Error setting Left")?;
         right.send(None).map_err(|_| "Error setting Right")?;
 
-        let controller_handle = junction
-            .controller_handle()
-            .ok_or_else(|| "Failed to get ControllerHandle".to_string())?;
-
-        // Construct the Node, and return it
         Ok(Self {
-            // junction,
-            controller_handle,
             key,
             key_put,
             key_get,
