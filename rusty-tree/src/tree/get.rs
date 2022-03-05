@@ -10,15 +10,13 @@ where
         // If there is a root node, start from it and traverse
         // let mut curr_node: Node<K, V> = root.clone();
         let mut curr_node: Node<K, V> = self.root.clone();
-        while let node = curr_node {
-            curr_node = match key.cmp(&node.get_key().ok()??) {
-                Ordering::Equal => return node.get_value().ok()?,
-                Ordering::Less => node.get_left().ok()??.clone(),
-                Ordering::Greater => node.get_right().ok()??.clone(),
+        loop {
+            curr_node = match key.cmp(&curr_node.get_key().ok()??) {
+                Ordering::Equal => return curr_node.get_value().ok()?,
+                Ordering::Less => curr_node.get_left().ok()??.clone(),
+                Ordering::Greater => curr_node.get_right().ok()??.clone(),
             };
         }
-
-        None
     }
 }
 

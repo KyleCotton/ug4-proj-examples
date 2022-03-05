@@ -1,6 +1,5 @@
 use rusty_junctions::{
     channels::{RecvChannel, SendChannel},
-    types::ControllerHandle,
     Junction,
 };
 use std::{fmt::Debug, marker::Send};

@@ -9,53 +9,38 @@ where
     V: Send + Clone + 'static + Debug,
 {
     pub fn insert(&self, key: K, value: V) -> Result<(), String> {
-        // // Start from the root node of the tree, and traverse
-        // let curr_node: &Node<K, V> = &self.root;
-        // while let Node::Entry { entry } = curr_node {
-        //     curr_node = match key.cmp(&entry.get_key()?) {
-        //         Ordering::Equal => {
-        //             entry.set_value(value)?;
-        //             return Ok(());
-        //         }
-        //         Ordering::Less => &*entry.get_left()?,
-        //         Ordering::Greater => &*entry.get_right()?,
-        //     };
-        // }
-
-        // *curr_node = Node::from_key_value(key, value)?;
-        // Ok(())
-
         // If there is a root node, start from it and traverse
-        // let mut curr_node: Node<K, V> = root.clone();
         let mut curr_node: Node<K, V> = self.root.clone();
-        while let node = curr_node {
+        loop {
             // If the key value is none, the node is empty
-            let curr_key = match node.get_key()? {
+            let curr_key = match curr_node.get_key()? {
                 None => {
-                    node.set_key(key)?;
-                    node.set_value(value)?;
+                    log::debug!("Node is None");
+                    curr_node.set_key(key)?;
+                    curr_node.set_value(value)?;
                     return Ok(());
                 }
-                Some(k) => k,
+                Some(k) => {
+                    log::debug!("Node is {k:?}");
+                    k
+                },
             };
 
             curr_node = match key.cmp(&curr_key) {
                 Ordering::Equal => {
-                    node.set_value(value)?;
+                    curr_node.set_value(value)?;
                     return Ok(());
                 }
-                Ordering::Less => node
+                Ordering::Less => curr_node
                     .get_left()?
                     .ok_or_else(|| "Failed to get Left")?
                     .clone(),
-                Ordering::Greater => node
+                Ordering::Greater => curr_node
                     .get_right()?
                     .ok_or_else(|| "Failed to get Right")?
                     .clone(),
             };
         }
-
-        Ok(())
     }
 }
 
@@ -65,7 +50,7 @@ mod tests {
 
     #[test]
     fn insert_single_element() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
+        let tree: RustyTree<i64, String> = RustyTree::new().unwrap();
 
         assert!(tree.insert(0, "Test Value".to_string()).is_ok());
         assert_eq!(tree.get(0), Some("Test Value".to_string()));
@@ -73,7 +58,7 @@ mod tests {
 
     #[test]
     fn insert_two_elements() {
-        let mut tree: RustyTree<i64, String> = RustyTree::new().unwrap();
+        let tree: RustyTree<i64, String> = RustyTree::new().unwrap();
         assert!(tree.insert(0, "Test Value 0".to_string()).is_ok());
         assert_eq!(tree.get(0), Some("Test Value 0".to_string()));
 
@@ -98,7 +83,7 @@ mod tests {
         let tree = RustyTree::from_key_value(0, 100);
         assert!(tree.is_ok());
 
-        let mut tree = tree.unwrap();
+        let tree = tree.unwrap();
         assert_eq!(tree.get(0), Some(100));
 
         assert!(tree.insert(0, 200).is_ok());
