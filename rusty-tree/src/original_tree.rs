@@ -44,7 +44,7 @@ where
             .when(&empty)
             .and(&set)
             .then_do(move |_empty, (key, value)| {
-                println!("Insert: Node Empty - Initialising");
+                // println!("Insert: Node Empty - Initialising");
                 let content = Content {
                     key,
                     value,
@@ -52,6 +52,7 @@ where
                     right: Self::new(),
                 };
                 content_clone.send(content).unwrap();
+                std::thread::sleep(std::time::Duration::from_nanos(1));
             });
 
         let content_clone = content.clone();
@@ -59,30 +60,32 @@ where
             .when(&content)
             .and(&set)
             .then_do(move |mut content, (search_key, new_value)| {
-                println!(
-                    "Insert for: {search_key:?}, currently at Key: {:?}, Value: {:?}",
-                    content.key, content.value
-                );
+                // println!(
+                //     "Insert for: {search_key:?}, currently at Key: {:?}, Value: {:?}",
+                //     content.key, content.value
+                // );
 
                 match search_key.cmp(&content.key) {
                     Ordering::Equal => {
-                        println!("Equal - Overwriting value");
+                        // println!("Equal - Overwriting value");
                         content.value = new_value;
                         content_clone.send(content).unwrap();
                     }
                     Ordering::Less => {
-                        println!("Less - Traverse Left");
+                        // println!("Less - Traverse Left");
                         let left = content.left.clone();
                         content_clone.send(content).unwrap();
                         left.set.send((search_key, new_value)).unwrap();
                     }
                     Ordering::Greater => {
-                        println!("Greater - Traverse Right");
+                        // println!("Greater - Traverse Right");
                         let right = content.right.clone();
                         content_clone.send(content).unwrap();
                         right.set.send((search_key, new_value)).unwrap();
                     }
                 }
+
+                std::thread::sleep(std::time::Duration::from_nanos(1));
             });
 
         let content_clone = content.clone();
@@ -90,30 +93,33 @@ where
             .when(&content)
             .and_bidir(&get)
             .then_do(move |content, search_key| {
-                println!(
-                    "Searching for: {search_key:?}, currently at Key: {:?}, Value: {:?}",
-                    content.key, content.value
-                );
+                // println!(
+                //     "Searching for: {search_key:?}, currently at Key: {:?}, Value: {:?}",
+                //     content.key, content.value
+                // );
                 let key = content.key.clone();
                 let value = content.value.clone();
                 let left = content.left.clone();
                 let right = content.right.clone();
                 content_clone.send(content).unwrap();
 
-                match search_key.cmp(&key) {
+                let ret = match search_key.cmp(&key) {
                     Ordering::Equal => {
-                        println!("Equal - Returning this node value");
+                        // println!("Equal - Returning this node value");
                         Some(value)
                     }
                     Ordering::Less => {
-                        println!("Less - Traverse Left");
+                        // println!("Less - Traverse Left");
                         left.get.send_recv(search_key).unwrap()
                     }
                     Ordering::Greater => {
-                        println!("Greater - Traverse Right");
+                        // println!("Greater - Traverse Right");
                         right.get.send_recv(search_key).unwrap()
                     }
-                }
+                };
+
+                std::thread::sleep(std::time::Duration::from_nanos(1));
+                ret
             });
 
         let empty_clone = empty.clone();
@@ -121,8 +127,9 @@ where
             .when(&empty)
             .and_bidir(&get)
             .then_do(move |_empty, _search_key| {
-                println!("Called get on an empty node");
+                // println!("Called get on an empty node");
                 empty_clone.send(()).unwrap();
+                std::thread::sleep(std::time::Duration::from_nanos(1));
                 None
             });
 

@@ -33,16 +33,17 @@ where
 
             |empty, set| {
                 let (new_key, new_value) = set;
-                println!("Macro Insert: Node Empty - Initialising");
+                // println!("Macro Insert: Node Empty - Initialising");
                 key_super.send(new_key).unwrap();
                 value_super.send(new_value).unwrap();
                 left_super.send(Self::new()).unwrap();
                 right_super.send(Self::new()).unwrap();
+                std::thread::sleep(std::time::Duration::from_nanos(1));
             },
 
             |key, value, left, right, set| {
                 let (search_key, new_value) = set;
-                println!("Macro Insert for: {search_key:?}, currently at Key: {key:?}, Value: {value:?}");
+                // println!("Macro Insert for: {search_key:?}, currently at Key: {key:?}, Value: {value:?}");
 
                 let node_key = key.clone();
                 let node_left = left.clone();
@@ -54,25 +55,27 @@ where
 
                 match search_key.cmp(&node_key) {
                     Ordering::Equal => {
-                        println!("Macro Equal - Overwriting value");
+                        // println!("Macro Equal - Overwriting value");
                         value_super.send(new_value).unwrap();
                     },
                     Ordering::Less => {
-                        println!("Macro Less - Traverse Left");
+                        // println!("Macro Less - Traverse Left");
                         value_super.send(value).unwrap();
                         node_left.set.send((search_key, new_value)).unwrap();
                     },
                     Ordering::Greater => {
-                        println!("Macro Greater - Traverse Right");
+                        // println!("Macro Greater - Traverse Right");
                         value_super.send(value).unwrap();
                         node_right.set.send((search_key, new_value)).unwrap();
                     },
                 }
+
+                std::thread::sleep(std::time::Duration::from_nanos(1));
             },
 
             |key, value, left, right, get| {
                 let search_key = get;
-                println!("Macro Searching for: {search_key:?}, currently at Key: {key:?}, Value: {value:?}");
+                // println!("Macro Searching for: {search_key:?}, currently at Key: {key:?}, Value: {value:?}");
 
                 let node_key = key.clone();
                 let node_value = value.clone();
@@ -84,25 +87,29 @@ where
                 left_super.send(left).unwrap();
                 right_super.send(right).unwrap();
 
-                match search_key.cmp(&node_key) {
+                let ret = match search_key.cmp(&node_key) {
                     Ordering::Equal => {
-                        println!("Macro Equal - Returning this node value");
+                        // println!("Macro Equal - Returning this node value");
                         Some(node_value)
                     },
                     Ordering::Less => {
-                        println!("Macro Less - Traverse Left");
+                        // println!("Macro Less - Traverse Left");
                         node_left.get.send_recv(search_key).unwrap()
                     },
                     Ordering::Greater => {
-                        println!("Macro Greater - Traverse Right");
+                        // println!("Macro Greater - Traverse Right");
                         node_right.get.send_recv(search_key).unwrap()
                     },
-                }
+                };
+
+                std::thread::sleep(std::time::Duration::from_nanos(1));
+                ret
             },
 
             |empty, get| {
-                println!("Macro Called get on an empty node");
+                // println!("Macro Called get on an empty node");
                 empty_super.send(()).unwrap();
+                std::thread::sleep(std::time::Duration::from_nanos(1));
                 None
             }
         }

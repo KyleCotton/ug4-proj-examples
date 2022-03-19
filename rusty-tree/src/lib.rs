@@ -1,13 +1,19 @@
-// #[cfg(feature = "standard")]
-
+pub mod mutex_tree;
 pub mod original_tree;
-// pub use crate::original_tree::RustyTree;
-
 pub mod standard_tree;
-// pub use crate::standard_tree::RustyTree;
-
 pub mod macro_tree;
-// pub use crate::macro_tree::RustyTree;
 
-// #[cfg(not(any(feature = "standard", feature = "macro")))]
-// compile_error!("Either feature \"standard\" or \"macro\" must be enabled for this crate.");
+#[cfg(feature = "mutex")]
+pub use crate::mutex_tree::RustyTree;
+
+#[cfg(feature = "original")]
+pub use crate::original_tree::RustyTree;
+
+#[cfg(feature = "standard")]
+pub use crate::standard_tree::RustyTree;
+
+#[cfg(feature = "macro")]
+pub use crate::macro_tree::RustyTree;
+
+#[cfg(not(any(feature = "mutex", feature = "original", feature = "standard", feature = "macro")))]
+compile_error!("One of the following features must be enabled: [mutex|original|standard|macro]");

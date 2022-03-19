@@ -10,10 +10,18 @@ fn criterion_benchmark(c: &mut Criterion) {
     group.warm_up_time(std::time::Duration::from_secs(5));
 
     let tree = rusty_tree::original_tree::RustyTree::new();
-    group.bench_function("Original Tree", |b| b.iter(|| tree.insert(black_box(0), black_box(9))));
+    group.bench_function("Original Tree", |b| {
+        let key = rand::random::<i64>();
+        let value = rand::random::<i64>();
+        b.iter(|| tree.insert(black_box(key), black_box(value)));
+    });
 
     let tree = rusty_tree::standard_tree::RustyTree::new();
-    group.bench_function("Standard Tree", |b| b.iter(|| tree.insert(black_box(0), black_box(9))));
+    group.bench_function("Standard Tree", |b| {
+        let key = rand::random::<i64>();
+        let value = rand::random::<i64>();
+        b.iter(|| tree.insert(black_box(key), black_box(value)));
+    });
 
     let tree = rusty_tree::macro_tree::RustyTree::new();
     group.bench_function("Macro Tree", |b| {
@@ -22,6 +30,12 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| tree.insert(black_box(key), black_box(value)));
     });
 
+    let tree = rusty_tree::mutex_tree::RustyTree::new();
+    group.bench_function("Mutex Tree", |b| {
+        let key = rand::random::<i64>();
+        let value = rand::random::<i64>();
+        b.iter(|| tree.insert(black_box(key), black_box(value)));
+    });
 
     group.finish();
 }

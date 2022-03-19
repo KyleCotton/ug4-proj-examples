@@ -10,6 +10,8 @@ pretty_env_logger = "0.4.0"
 rayon = "1.5.1"
 
 [features]
+mutex = []
+original = []
 standard = []
 macro = []
 
@@ -20,3 +22,6 @@ criterion = { version = "0.3.5", features = ["html_reports"]}
 [[bench]]
 name = "benchmark"
 harness = false
+
+[profile.bench]
+debug = true
