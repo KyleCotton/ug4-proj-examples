@@ -18,6 +18,7 @@ impl WebServer for SingleThreadedWebServer {
             .expect("Failed to start TcpListener")
             .incoming()
         {
+            std::thread::sleep(5 * std::time::Duration::from_millis(10));
             if let Err(e) = strm {
                 println!("Stream Error: {:?}", e.to_string());
                 continue;

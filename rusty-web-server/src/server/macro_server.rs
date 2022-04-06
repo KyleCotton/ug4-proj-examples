@@ -26,6 +26,7 @@ impl WebServer for MacroServer {
                 if let Ok(action) = Action::from_parsed_http_request(request) {
                     action_super.send(action).unwrap();
                 }
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
 
             |action| {
@@ -41,6 +42,7 @@ impl WebServer for MacroServer {
                     }
                     Operation::Get => get_super.send(stream).unwrap(),
                 };
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
 
             |increment, increment_value, value| {
@@ -51,7 +53,7 @@ impl WebServer for MacroServer {
                 HttpResponse::send(strm, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
 
             |decrement, decrement_value, value| {
@@ -62,7 +64,7 @@ impl WebServer for MacroServer {
                 HttpResponse::send(strm, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
 
             |get, value, increment_value, decrement_value| {
@@ -73,7 +75,7 @@ impl WebServer for MacroServer {
                 HttpResponse::send(get, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             }
         };
 

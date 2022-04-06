@@ -34,6 +34,7 @@ impl WebServer for OriginalServer {
             if let Ok(action) = Action::from_parsed_http_request(request) {
                 action_clone.send(action).unwrap();
             }
+            std::thread::sleep(std::time::Duration::from_millis(10));
         });
 
         let decrement_clone = decrement.clone();
@@ -52,6 +53,7 @@ impl WebServer for OriginalServer {
                     }
                     Operation::Get => get_clone.send(stream).unwrap(),
                 };
+                std::thread::sleep(std::time::Duration::from_millis(10));
             });
 
         let metrics_clone = metrics.clone();
@@ -74,7 +76,7 @@ impl WebServer for OriginalServer {
                 HttpResponse::send(strm, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
         );
 
@@ -98,7 +100,7 @@ impl WebServer for OriginalServer {
                 HttpResponse::send(strm, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             },
         );
 
@@ -117,7 +119,7 @@ impl WebServer for OriginalServer {
                 HttpResponse::send(strm, message)
                     .map_err(|e| print!("HttpResponse Error: {}", e.to_string()))
                     .ok();
-                ()
+                std::thread::sleep(std::time::Duration::from_millis(10));
             });
 
         metrics

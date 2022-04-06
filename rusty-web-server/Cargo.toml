@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 rusty-junctions = {path = "./../../rusty-junctions"}
-# rusty_junctions = {path = "./../../original_rusty_junctions"}
 httparse = "1.6.0"
 
 [features]
@@ -16,7 +15,9 @@ macro = []
 
 [dev-dependencies]
 rand = "0.8.5"
-criterion = { version = "0.3.5", features = ["html_reports"]}
+rayon = "1.5.1"
+criterion = { version = "0.3.5", features = ["html_reports"] }
+reqwest = { version = "0.11.10", features = ["blocking"] }
 
 [[bench]]
 name = "benchmark"

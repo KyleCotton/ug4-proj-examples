@@ -1,0 +1,5 @@
+CARGO_PROFILE_BENCH_DEBUG=true sudo cargo flamegraph -F 1000 --example run --features macro -o macro.svg
+sudo ab -n 10000 -c 100 -g gnu_plot.gnuplot -e csv_data.csv http://localhost:8080/add/1
+
+CARGO_PROFILE_BENCH_DEBUG=true sudo cargo flamegraph -F 1000 --example run --features macro -o macro.svg
+sudo ab -c 100 -n 10000 -g macro.gnuplot -e macro.csv >> macro.txt http://localhost:8080/add/10/

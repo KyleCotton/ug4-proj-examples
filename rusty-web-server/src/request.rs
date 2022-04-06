@@ -34,7 +34,7 @@ impl ParsedHttpRequest {
 
         let mut headers = [httparse::EMPTY_HEADER; 16];
         let mut req = ParseRequest::new(&mut headers);
-        req.parse(&buffer).map_err(|_| "Failed to parse Request")?;
+        req.parse(&buffer).map_err(|e| format!("Failed to parse Request: {}", e.to_string()))?;
 
         let path = req
             .path
