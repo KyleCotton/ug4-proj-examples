@@ -14,6 +14,3 @@ pub use crate::standard_tree::RustyTree;
 
 #[cfg(feature = "macro")]
 pub use crate::macro_tree::RustyTree;
-
-#[cfg(not(any(feature = "mutex", feature = "original", feature = "standard", feature = "macro")))]
-compile_error!("One of the following features must be enabled: [mutex|original|standard|macro]");
